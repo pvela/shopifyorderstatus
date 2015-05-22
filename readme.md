@@ -9,14 +9,14 @@ Currently it shows the Order id, Fulfillment status and payment status of the or
 The steps to activate this app are 
 
 1. Create a private app in shopify admin of the store that needs the Anonymous Order Status check feature
-
 2. Create a new page under Online Store menu. Paste the code from order_status_page.html in this new page using the shopify admin page.
-
 3. clone this project and run it in a server.
-
 4. Change the server url in the html page for the following 2 javascript varibles
+
+
 var checkPhoneUrl = "http://localhost:9000/checkstatus?orderPhoneNumber=";
+
 var checkOrderUrl = "http://localhost:9000/checkcode?requestId=";
 
-Once this is done you have a status check page using 2fa.
+Once this is done you have a order status check page using 2fa.
 
