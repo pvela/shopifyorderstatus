@@ -1,0 +1,94 @@
+<p>Check the status of the order using the phone number used to place the order. Here is how it works</p>
+<ol>
+<li>Enter the phone including internationalcode, areacode and phone number. For Ex : US Phone numbers should start with 1 followed by 10 numbers like 13033030000</li>
+<li>We will send a security code by SMS to the number entered above. If the entered number is not a mobile number a voice call will be made.</li>
+<li>Enter the security code in the page and press the Check Order Status button</li>
+<li>We will verify the security code and if valid then give you the status of the latest order</li>
+</ol>
+<div id="error"></div>
+<div id="phoneentry">
+<p>Phone Number : <input id="orderphone" type="text" name="orderphone" /> <button type="button" onclick="checkPhone()" name="submit">Send Access Code</button></p>
+</div>
+<div id="codeentry" style="display: none;">
+<p>Access Code : <input id="accesscode" type="text" name="orderphone" /> <input id="requestid" type="hidden" name="requestid" /> <button type="button" onclick="checkOrder()" name="submit">Check Order Status</button></p>
+</div>
+<div id="orderstatus" style="display: none;">Order Id :
+<div id="orderid"></div>
+Payment Status :
+<div id="finstatus"></div>
+Fulfillment Status :
+<div id="fstatus"></div>
+</div>
+<script>// <![CDATA[
+var statusError;
+var checkPhoneUrl = "http://localhost:9000/checkstatus?orderPhoneNumber=";
+var checkOrderUrl = "http://localhost:9000/checkcode?requestId=";
+
+var hidePhone = function() {
+	$("#phoneentry").hide();
+}
+
+var showCode = function(requestId) {
+	document.getElementById("error").innerText = "";
+	document.getElementById("requestid").value = requestId;
+	$("#codeentry").show();
+}
+var hideCode = function() {
+	document.getElementById("error").innerText = "";
+	$("#codeentry").hide();
+}
+var showError = function() {
+	document.getElementById("error").innerText = statusError;
+	$("#error").show();
+}
+var showOrderStatus = function(order) {
+	document.getElementById("error").innerText = "";
+	document.getElementById("orderid").innerText = order.id;
+	document.getElementById("fstatus").innerText = order.fulfillment_status;
+	document.getElementById("finstatus").innerText = order.financial_status;
+	$("#orderstatus").show();
+}
+
+var checkPhone = function() {
+	var orderPhoneNumber = $("#orderphone").val();
+	$.ajax({url:checkPhoneUrl+orderPhoneNumber,method:"POST"})
+	.done(function(dataResp) {
+		if (!dataResp || !dataResp.requestId) {
+			statusError = "Error submitting the phone, please try again later or contact support";
+			showError(statusError);
+		} else {
+			hidePhone();
+			showCode(dataResp.requestId);
+		}
+	  })
+	  .fail(function() {
+		statusError = "Error submitting the phonenumber, please try again later or contact support";
+		showError(statusError);
+	  })
+	  .always(function() {
+	    console.log("complete")
+	  });
+}
+
+var checkOrder = function() {
+	var requestId = $("#requestid").val();
+	var keycode = $("#accesscode").val();
+	$.ajax({url:checkOrderUrl+requestId+"&keycode="+keycode,method:"POST"})
+	.done(function(dataResp) {
+		if (!dataResp || !dataResp.order) {
+			statusError = "Error verifying the code, please try again later or contact support";
+			showError(statusError);
+		} else {
+			hideCode();
+			showOrderStatus(dataResp.order);
+		}
+	  })
+	  .fail(function() {
+	    statusError = "Error verifying the code, please try again later or contact support";
+		showError(statusError);
+	  })
+	  .always(function() {
+	    console.log("complete")
+	  });
+}
+// ]]></script>
