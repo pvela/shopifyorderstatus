@@ -51,6 +51,7 @@ app.get('/', function (req, res) {
 	res.render("index");
 })
 
+
 app.post('/checkstatus', function(req,res){
 	if ( req.query.orderPhoneNumber == '' && req.query.orderPhoneNumber.trim() == '') {
 		//res.render("index",{"error":"Phone number not found"})
@@ -84,7 +85,7 @@ app.post('/checkcode', function(req,res){
 				res.send({error:"Error retriving phonenumber from cache, please try again"});
 				return;
 			} else {
-				client.get("https://ethervoice.myshopify.com/admin/orders.json", 
+				client.get(appConfig.ShopifySiteName + "/admin/orders.json", 
 				function(buf, response){
 					var StringDecoder = require('string_decoder').StringDecoder;
 					var decoder = new StringDecoder('utf8');
